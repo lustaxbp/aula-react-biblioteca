@@ -10,7 +10,7 @@ function Rodape(): JSX.Element {
         // Elemento <footer> que representa o rodapé da página, com classe de estilo personalizada
         <footer className={estilo.rodape}>
             {/* Texto com o nome do desenvolvedor ou entidade responsável */}
-            <p>Desenvolvido por: Aula React</p>
+            <p>Desenvolvido por: Luís Otávio Bordin</p>
 
             {/* Texto de direitos autorais */}
             <p>Copyright</p>

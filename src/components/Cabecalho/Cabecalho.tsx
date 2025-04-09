@@ -39,3 +39,4 @@ function Cabecalho(): JSX.Element {
 
 // Exporta o componente para ser utilizado em outros arquivos
 export default Cabecalho;
+
