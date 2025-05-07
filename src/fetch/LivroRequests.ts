@@ -1,60 +1,68 @@
-// Importa as configurações do servidor a partir de um arquivo externo
-import { SERVER_CFG } from "../appConfig";
-import LivroDTO from "../interfaces/LivroInterface";
+import { SERVER_CFG } from '../appConfig';
+import LivroDTO from '../interfaces/LivroInterface';
 
 /**
- * Classe responsável por fazer as requisições relacionadas aos livros
- * Esta classe irá se comunicar com a API para listar, cadastrar, atualizar e remover livros
+ * Classe com a coleção de funções que farão as requisições à API
+ * Esta classe representa apenas as requisições da entidade Livro
  */
 class LivroRequests {
 
-    private serverURL: string;          // URL base do servidor da API
-    private routeListaLivros: string;   // Rota (endpoint) para buscar a lista de livros
-    private routeCadastraLivro: string; // Rota para cadastrar um novo livro
-    private routeAtualizaLivro: string; // Rota para atualizar os dados de um livro
-    private routeRemoveLivro: string;   // Rota para remover um livro
+    private serverURL: string;            // Endereço do servidor
+    private routeListaLivros: string;     // Rota para listagem de livros
+    private routeCadastraLivro: string;   // Rota para cadastro de novo livro
 
-    /**
-     * O construtor é chamado automaticamente quando criamos uma nova instância da classe.
-     * Ele define os valores iniciais das variáveis com base nas configurações da API.
-     */
     constructor() {
-        this.serverURL = SERVER_CFG.SERVER_URL;         // Endereço do servidor web
-        this.routeListaLivros = '/lista/livros';        // Define a rota para listar os livros
-        this.routeCadastraLivro = '/novo/livro';        // Define a rota para cadastrar livros
-        this.routeAtualizaLivro = '/atualiza/livro';    // Define a rota para atualizar livros
-        this.routeRemoveLivro = '/remove/livro';        // Define a rota para remover livros
+        this.serverURL = SERVER_CFG.SERVER_URL;      // Endereço do servidor web
+        this.routeListaLivros = '/lista/livros';     // Rota configurada na API
+        this.routeCadastraLivro = '/novo/livro';     // Rota configurada na API
     }
 
     /**
-     * Método que faz uma requisição à API para buscar a lista de livros cadastrados
-     * @returns Retorna um JSON com a lista de livros ou null em caso de erro
+     * Faz uma requisição para buscar a lista de livros cadastrados
+     * @returns Um JSON com a lista de livros ou null em caso de erro
      */
-    async listarLivros(): Promise<LivroDTO | null> {
+    async listarLivros(): Promise<LivroDTO[] | null> {
         try {
-            // Faz a requisição GET para a rota da lista de livros
             const respostaAPI = await fetch(`${this.serverURL}${this.routeListaLivros}`);
-        
-            // Verifica se a resposta da API foi bem-sucedida (status 200-299)
-            if(respostaAPI.ok) {
-                // Converte a resposta para formato JSON
-                const listaDeLivros: LivroDTO = await respostaAPI.json();
 
-                // Retorna a lista de livros
+            if (respostaAPI.ok) {
+                const listaDeLivros: LivroDTO[] = await respostaAPI.json();
                 return listaDeLivros;
             }
 
-            // retorna um valor nulo caso o servidor não envie a resposta
             return null;
         } catch (error) {
-            // Caso ocorra algum erro (ex: servidor fora do ar), exibe no console
-            console.error(`Erro ao fazer a consulta de livros: ${error}`);
-
-            // Retorna null para indicar que a operação falhou
+            console.error(`Erro ao buscar livros: ${error}`);
             return null;
+        }
+    }
+
+    /**
+     * Envia os dados do formulário de livro para a API
+     * @param formLivro Objeto com os valores do formulário
+     * @returns true se o cadastro for bem-sucedido, false se ocorrer erro
+     */
+    async enviaFormularioLivro(formLivro: string): Promise<boolean> {
+        try {
+            const respostaAPI = await fetch(`${this.serverURL}${this.routeCadastraLivro}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: formLivro
+            });
+
+            if (!respostaAPI.ok) {
+                throw new Error('Erro ao fazer requisição com o servidor.');
+            }
+
+            return true;
+        } catch (error) {
+            console.error(`Erro ao enviar o formulário de livro: ${error}`);
+            return false;
         }
     }
 }
 
-// Exporta a classe já com um objeto instanciado para ser usado diretamente
+// Exporta a classe já instanciada
 export default new LivroRequests();

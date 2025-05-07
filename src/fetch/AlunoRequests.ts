@@ -41,7 +41,7 @@ class AlunoRequests {
                 // retorna a resposta
                 return listaDeAlunos;
             }
-            
+
             // retorna um valor nulo caso o servidor não envie a resposta
             return null;
         } catch (error) {
@@ -49,6 +49,26 @@ class AlunoRequests {
             console.error(`Erro ao fazer a consulta de alunos: ${error}`);
             // retorna um valor nulo
             return null;
+        }
+    }
+
+    async enviarFormulario(formAluno: string): Promise<boolean> {
+        try {
+            const respostaAPI = await fetch(`${this.serverURL}${this.routeCadastraAluno}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: formAluno
+            });
+            if (!respostaAPI.ok) {
+                throw new Error('Erro ao fazer a requisição com o servidor.');
+            }
+            return true;
+
+        } catch (error) {
+            console.error(`Erro ao enviar o formulario. ${error}`);
+            return false;
         }
     }
 }
